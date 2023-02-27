@@ -26,6 +26,11 @@ main {
   display: flex;
   flex-direction: column;
   padding: 20px;
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 p {
   text-align: center;
