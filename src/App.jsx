@@ -5,6 +5,7 @@ import Card from './components/Card';
 import Confetti from './components/Confetti';
 import { nanoid } from 'nanoid';
 import { LayoutGroup } from 'framer-motion';
+import { shuffleArray } from './utils';
 
 function App() {
   const levels = [
@@ -23,11 +24,10 @@ function App() {
   const [win, setWin] = React.useState(false);
   const [cards, setCards] = React.useState(getNewCards(levels[0].cards));
   const [revealed, setRevealed] = useState(true);
-  function getNewCards(nbCards) {
-    shuffle(images);
-    const imagesSelection = images.slice(0, nbCards);
 
-    console.log('imagesSelection', imagesSelection);
+  function getNewCards(nbCards) {
+    const newImages = shuffleArray(images);
+    const imagesSelection = newImages.slice(0, nbCards);
     const newCards = imagesSelection.map((item) => ({
       image: item,
       clickCount: 0,
@@ -47,17 +47,20 @@ function App() {
           setGameStart(true);
           setGameRunning(false);
         } else {
-          shuffle(cards);
+          shuffleArray(cards);
           setCards((oldCards) =>
             oldCards.map((card) => {
               return card.id === id ? { ...card, isClicked: true } : card;
             })
           );
-          setScore((prevScore) => prevScore + 1);
+          const newScore = score + 1;
+          if (newScore > bestScore) setBestScore(newScore);
+          setScore(newScore);
           console.log(`score ${score} pour card ${card.name}`);
         }
       }
     });
+    // turn card
     setRevealed((prevState) => !prevState);
     setTimeout(() => {
       setRevealed((prevState) => !prevState);
@@ -75,12 +78,9 @@ function App() {
       }
     }
   }
-  function shuffle(array) {
-    array.sort((a, b) => 0.5 - Math.random());
-  }
 
-  function saveBestScore(score) {
-    setBestScore(score);
+  function saveBestScore(bestScore) {
+    //setBestScore(score);
     localStorage.setItem('MemoryBestScore', bestScore);
   }
   function getBestScore() {
@@ -90,17 +90,17 @@ function App() {
     console.log(
       `current level:${levels[level].name} with ${levels[level].cards} cards`
     );
-    console.log('win', win);
-    if (!gameRunning) {
+    if (gameOver) {
       console.log('reset du score');
       setScore(0);
     }
     if (win) {
-      setScore((prevScore) => prevScore);
       setLevel((prevLevel) => prevLevel + 1);
+      // new card set with  difficulty increase
       setCards(getNewCards(levels[level + 1].cards));
       setGameRunning(true);
     } else {
+      // easy number of cards
       setCards(getNewCards(levels[0].cards));
       setGameRunning(false);
     }
@@ -114,26 +114,15 @@ function App() {
   React.useEffect(() => {
     const allCliqued = cards.every((card) => card.isClicked);
 
-    const cardClickedTwice = cards.every((card) => card.clickCount >= 2);
-    if (cardClickedTwice) {
-      console.log('vous avez perdu 2x click');
-    }
     if (allCliqued) {
       console.log('you win');
       console.log('total clicks', score);
       setWin(true);
       setGameStart(true);
-      //setNumberOfImages((prevNbImages) => prevNbImages * 2);
-
-      console.log(
-        `current level:${levels[level].name} with ${levels[level].cards} cards`
-      );
     }
-    countScore();
+    //countScore();
 
-    shuffle(cards);
-
-    console.log('score', score);
+    shuffleArray(cards);
   }, [cards]);
   // create a array of card components, with random position
   const cardElements = cards.map((card) => {
