@@ -5,10 +5,13 @@
   --green: rgba(89, 227, 145, 1);
   --blue: rgba(80, 53, 255, 1);
   --light-blue: rgba(46, 217, 255, 0.9);
+  --orange: #d8923e;
+  --dark-green: rgb(34 47 50);
 }
 body {
   align-items: center;
   background: rgba(11, 36, 52, 1);
+  color: beige;
   display: flex;
   font-family: 'Karla', sans-serif;
   justify-content: center;
@@ -18,22 +21,80 @@ body {
 
 main {
   align-items: center;
-  background: rgba(245, 245, 245, 1);
+  background: var(--dark-green);
   border-radius: 15px;
   -webkit-box-shadow: 0px 0px 114px 0px var(--light-blue);
   -moz-box-shadow: 0px 0px 114px 0px var(--light-blue);
   box-shadow: 0px 0px 114px 0px var(--light-blue);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  min-height: 50vh;
   padding: 20px;
-
+  header {
+    align-items: flex-start;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    width: 100%;
+    .header-left {
+      align-content: flex-start;
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      h1 {
+        color: var(--orange);
+        margin: 0;
+      }
+    }
+  }
   .cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    .card {
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.2s ease-in;
+      width: 100px;
+      &.is-clicked svg.card-bg path {
+        // fill: orange;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      svg.card-bg {
+        height: inherit;
+        width: 100%;
+        path {
+          fill: #fff;
+          transition: 0.6s;
+        }
+      }
+      &:hover {
+        box-shadow: 0px 0px 30px var(--orange);
+        cursor: pointer;
+        -moz-transition: all 0.2s ease-in;
+        -o-transition: all 0.2s ease-in;
+        -webkit-transition: all 0.2s ease-in;
+        transition: all 0.2s ease-in;
+        svg.card-bg path {
+          fill: var(--orange);
+        }
+      }
+    }
   }
 }
 p {
   text-align: center;
+}
+.info {
+  background: var(--light-blue);
+  border-radius: 10px;
+  color: white;
+  padding: 4px;
 }
 button {
   border: none;
@@ -55,13 +116,7 @@ button.roll:hover {
 button.roll :active {
   box-shadow: inset 5px 5px 10px -3px rgba(82, 12, 12, 0.7);
 }
-
-footer {
-  align-items: center;
-  display: grid;
-  grid-template: auto auto / repeat(3, 1fr);
+.confetti {
+  height: 100%;
   width: 100%;
-}
-header .score-board {
-  justify-self: end;
 }
