@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
-import reactLogo from './assets/react.svg';
+import Logo from './assets/images/logo.svg';
 import { images } from './assets/data';
 import Card from './components/Card';
 import Confetti from './components/Confetti';
 import { nanoid } from 'nanoid';
-import { LayoutGroup } from 'framer-motion';
+import { LayoutGroup, motion } from 'framer-motion';
 import { shuffleArray } from './utils';
 
 function App() {
   const levels = [
-    { name: 'easy', cards: 2 },
-    { name: 'hard', cards: 3 },
-    { name: 'crazy hard', cards: 4 },
-    { name: 'impossibruuu', cards: 5 }
+    { name: 'Easy', cards: 3 },
+    { name: 'Normal', cards: 6 },
+    { name: 'Hard', cards: 9 },
+    { name: 'Expert', cards: 12 },
+    { name: 'Madness', cards: 24 },
+    { name: 'Impossibruuu (lvl max)', cards: 48 }
   ];
   const [level, setLevel] = React.useState(0);
-  //const [numberOfImages, setNumberOfImages] = React.useState(4);
   const [bestScore, setBestScore] = React.useState(getBestScore() || 0);
   const [score, setScore] = React.useState(0);
   const [gameStart, setGameStart] = React.useState(false);
@@ -34,7 +35,7 @@ function App() {
       isClicked: false,
       id: nanoid()
     }));
-    console.log('newCards', newCards);
+
     return newCards;
   }
   function handleClick(id) {
@@ -42,21 +43,23 @@ function App() {
       if (card.id === id) {
         if (card.isClicked === true) {
           //if already click, another click = game over
-          console.log('loser');
           setGameOver(true);
           setGameStart(true);
           setGameRunning(false);
         } else {
-          shuffleArray(cards);
+          //shuffleArray(cards);
           setCards((oldCards) =>
-            oldCards.map((card) => {
-              return card.id === id ? { ...card, isClicked: true } : card;
-            })
+            shuffleArray(
+              oldCards.map((card) => {
+                return card.id === id ? { ...card, isClicked: true } : card;
+              })
+            )
           );
           const newScore = score + 1;
-          if (newScore > bestScore) setBestScore(newScore);
+          if (newScore > bestScore) {
+            saveBestScore(newScore);
+          }
           setScore(newScore);
-          console.log(`score ${score} pour card ${card.name}`);
         }
       }
     });
@@ -65,66 +68,60 @@ function App() {
     setTimeout(() => {
       setRevealed((prevState) => !prevState);
     }, 1000);
-    console.log('revelead', revealed);
-  }
-  function countScore() {
-    if (!gameOver) {
-      const currentScore = cards.filter((card) => card.isClicked).length;
-      console.log('currentScore', currentScore);
-      //setScore((prevScore) => prevScore + 1);
-      if (score >= bestScore) {
-        console.log('save best');
-        saveBestScore(score);
-      }
-    }
   }
 
   function saveBestScore(bestScore) {
-    //setBestScore(score);
+    setBestScore(bestScore);
     localStorage.setItem('MemoryBestScore', bestScore);
   }
   function getBestScore() {
     return localStorage.getItem('MemoryBestScore');
   }
   function handleNewGame() {
-    console.log(
-      `current level:${levels[level].name} with ${levels[level].cards} cards`
-    );
-    if (gameOver) {
-      console.log('reset du score');
-      setScore(0);
-    }
     if (win) {
-      setLevel((prevLevel) => prevLevel + 1);
-      // new card set with  difficulty increase
-      setCards(getNewCards(levels[level + 1].cards));
-      setGameRunning(true);
+      gameLevelUp();
     } else {
-      // easy number of cards
-      setCards(getNewCards(levels[0].cards));
-      setGameRunning(false);
+      gameReset();
     }
+  }
 
+  function gameReset() {
+    // easy number of cards
+    setCards(getNewCards(levels[0].cards));
+    setGameRunning(false);
+    setScore(0);
     setGameStart(false);
     setGameOver(false);
     setWin(false);
-    console.log(cards);
+  }
+
+  function gameLevelUp() {
+    if (level < levels.length - 1) {
+      setLevel((prevLevel) => prevLevel + 1);
+      // new card set with  difficulty increase
+      setCards(getNewCards(levels[level + 1].cards));
+    } else {
+      //level max
+      setLevel((prevLevel) => prevLevel);
+      setCards(getNewCards(levels[level].cards));
+    }
+
+    setGameRunning(true);
+    setGameStart(false);
+    setGameOver(false);
+    setWin(false);
   }
 
   React.useEffect(() => {
     const allCliqued = cards.every((card) => card.isClicked);
 
+    //check if win
     if (allCliqued) {
-      console.log('you win');
-      console.log('total clicks', score);
       setWin(true);
       setGameStart(true);
     }
-    //countScore();
-
-    shuffleArray(cards);
   }, [cards]);
-  // create a array of card components, with random position
+  // create a array of card components
   const cardElements = cards.map((card) => {
     return (
       <LayoutGroup key={card.id}>
@@ -140,49 +137,61 @@ function App() {
     );
   });
   return (
-    <main className="App">
+    <>
       {win ? <Confetti /> : ''}
-      <header>
-        <div className="header-left">
-          <h1 className="title">le memory game</h1>
+      <main className="App">
+        <header>
+          <div className="header-left">
+            <motion.img
+              initial={{ x: 300, opacity: 0, rotate: 0 }}
+              animate={{ x: 0, opacity: 1, rotate: -10 }}
+              exit={{ x: 300, opacity: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 260,
+                damping: 20
+              }}
+              src={Logo}
+              className="logo"
+            />
+          </div>
 
-          <p>{`Level: ${levels[level].name} `}</p>
-        </div>
+          <div className="score-board">
+            <div className="score-board-current">Current Score: {score}</div>
+            <div className="score-board-high">HighScore: {bestScore}</div>
+            <div>{`Level: ${levels[level].name} `}</div>
+          </div>
+        </header>
 
-        <div className="score-board">
-          <div className="score-board-current">Current Score: {score}</div>
-          <div className="score-board-high">HighScore: {bestScore}</div>
-        </div>
-      </header>
-
-      {gameOver ? (
-        <p className="info">
-          <span>🎲</span> Game Over !
-        </p>
-      ) : (
-        <>
-          {win ? (
-            <p className="info">
-              <span>🎲</span> Bravo! You won !
-            </p>
-          ) : (
-            <>
+        {gameOver ? (
+          <p className="info">
+            <span>🎲</span> Game Over !
+          </p>
+        ) : (
+          <>
+            {win ? (
               <p className="info">
-                <span>🎲</span> Don't click the same card twice !
+                <span>🎲</span> Bravo! You won !
               </p>
-              <div className="cards">{cardElements}</div>
-            </>
-          )}
-        </>
-      )}
-      {gameStart ? (
-        <button className="roll" onClick={handleNewGame}>
-          {win ? 'Play next level' : 'New game'}
-        </button>
-      ) : (
-        ''
-      )}
-    </main>
+            ) : (
+              <>
+                <p className="info">
+                  <span>🎲</span> Don't pick the same animal twice !
+                </p>
+                <div className="cards">{cardElements}</div>
+              </>
+            )}
+          </>
+        )}
+        {gameStart && (
+          <>
+            <button className="roll" onClick={handleNewGame}>
+              {win ? 'Play next level' : 'New game'}
+            </button>
+          </>
+        )}
+      </main>
+    </>
   );
 }
 

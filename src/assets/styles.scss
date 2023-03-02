@@ -1,19 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 * {
   box-sizing: border-box;
 }
+@mixin stroke($color: white, $size: 2px) {
+  text-shadow: -#{$size} -#{$size} 0 $color, 0 -#{$size} 0 $color,
+    #{$size} -#{$size} 0 $color, #{$size} 0 0 $color, #{$size} #{$size} 0 $color,
+    0 #{$size} 0 $color, -#{$size} #{$size} 0 $color, -#{$size} 0 0 $color;
+}
+@mixin mobile {
+  @media screen and (max-width: (768px)) {
+    @content;
+  }
+}
 :root {
-  --green: rgba(89, 227, 145, 1);
+  --green: rgb(191 174 6);
+  --dark-green: #233c02;
   --blue: rgba(80, 53, 255, 1);
   --light-blue: rgba(46, 217, 255, 0.9);
   --orange: #d8923e;
-  --dark-green: rgb(34 47 50);
+  --beige: beige;
+  --dark-grey: rgb(70 88 92);
 }
 body {
   align-items: center;
   background: rgba(11, 36, 52, 1);
-  color: beige;
+  background-color: rgb(36 77 3);
+  background-image: url('../assets/images/forest.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--beige);
   display: flex;
-  font-family: 'Karla', sans-serif;
+  font-family: 'Pacifico', cursive;
   justify-content: center;
   margin: 0;
   min-height: 100vh;
@@ -23,20 +40,26 @@ main {
   align-items: center;
   background: var(--dark-green);
   border-radius: 15px;
-  -webkit-box-shadow: 0px 0px 114px 0px var(--light-blue);
-  -moz-box-shadow: 0px 0px 114px 0px var(--light-blue);
-  box-shadow: 0px 0px 114px 0px var(--light-blue);
+  -webkit-box-shadow: 0px 0px 114px 0px var(--orange);
+  -moz-box-shadow: 0px 0px 114px 0px var(--orange);
+  box-shadow: 0px 0px 114px 0px var(--orange);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 50vh;
+  min-width: 320px;
   padding: 20px;
+  position: relative;
   header {
     align-items: flex-start;
     display: flex;
     gap: 20px;
     justify-content: space-between;
     width: 100%;
+    @include mobile {
+      align-items: center;
+      flex-direction: column;
+    }
     .header-left {
       align-content: flex-start;
       align-items: flex-start;
@@ -44,16 +67,39 @@ main {
       flex-direction: column;
       justify-content: flex-start;
       h1 {
+        @include stroke;
         color: var(--orange);
         margin: 0;
+      }
+      .logo {
+        left: -40px;
+        position: absolute;
+        top: -49px;
+        transform: rotate(-7deg);
+        @include mobile {
+          position: static;
+          transform: none;
+        }
+      }
+    }
+    .score-board {
+      @include mobile {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
       }
     }
   }
   .cards {
+    align-items: center;
     display: grid;
+    gap: 10px;
     grid-template-columns: repeat(3, minmax(120px, 1fr));
+    justify-items: center;
     .card {
+      background-color: var(--beige);
       border-radius: 10px;
+      margin: 0;
       overflow: hidden;
       position: relative;
       transition: all 0.2s ease-in;
@@ -91,7 +137,7 @@ p {
   text-align: center;
 }
 .info {
-  background: var(--light-blue);
+  background: var(--dark-grey);
   border-radius: 10px;
   color: white;
   padding: 4px;
@@ -102,20 +148,17 @@ button {
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   font-size: 1em;
-  font-weight: bold;
   padding: 10px 20px;
+  &.roll {
+    background: var(--green);
+    color: white;
+    &:hover {
+      background: var(--orange);
+      color: white;
+    }
+  }
 }
-button.roll {
-  background: var(--blue);
-  color: white;
-}
-button.roll:hover {
-  background: var(--light-blue);
-  color: white;
-}
-button.roll :active {
-  box-shadow: inset 5px 5px 10px -3px rgba(82, 12, 12, 0.7);
-}
+
 .confetti {
   height: 100%;
   width: 100%;
