@@ -21,7 +21,6 @@ function App() {
   const [score, setScore] = React.useState(0);
   const [gameStart, setGameStart] = React.useState(false);
   const [gameOver, setGameOver] = React.useState(false);
-  const [gameRunning, setGameRunning] = React.useState(false);
   const [win, setWin] = React.useState(false);
   const [cards, setCards] = React.useState(getNewCards(levels[0].cards));
   const [revealed, setRevealed] = useState(true);
@@ -45,9 +44,7 @@ function App() {
           //if already click, another click = game over
           setGameOver(true);
           setGameStart(true);
-          setGameRunning(false);
         } else {
-          //shuffleArray(cards);
           setCards((oldCards) =>
             shuffleArray(
               oldCards.map((card) => {
@@ -88,7 +85,6 @@ function App() {
   function gameReset() {
     // easy number of cards
     setCards(getNewCards(levels[0].cards));
-    setGameRunning(false);
     setScore(0);
     setGameStart(false);
     setGameOver(false);
@@ -105,8 +101,6 @@ function App() {
       setLevel((prevLevel) => prevLevel);
       setCards(getNewCards(levels[level].cards));
     }
-
-    setGameRunning(true);
     setGameStart(false);
     setGameOver(false);
     setWin(false);
@@ -121,6 +115,7 @@ function App() {
       setGameStart(true);
     }
   }, [cards]);
+
   // create a array of card components
   const cardElements = cards.map((card) => {
     return (
