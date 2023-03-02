@@ -22,6 +22,7 @@ When you succeed, you get a new more difficult level.
 ### Tools
 
 - Vite
+- Framer motion (react animations)
 
 ## Features
 
