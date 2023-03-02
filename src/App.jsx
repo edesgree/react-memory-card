@@ -9,10 +9,10 @@ import { shuffleArray } from './utils';
 
 function App() {
   const levels = [
-    { name: 'Easy', cards: 3 },
-    { name: 'Normal', cards: 6 },
-    { name: 'Hard', cards: 9 },
-    { name: 'Expert', cards: 12 },
+    { name: 'Easy', cards: 4 },
+    { name: 'Normal', cards: 8 },
+    { name: 'Hard', cards: 12 },
+    { name: 'Expert', cards: 16 },
     { name: 'Madness', cards: 24 },
     { name: 'Impossibruuu (lvl max)', cards: 48 }
   ];
