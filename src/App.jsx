@@ -45,6 +45,7 @@ function App() {
           setGameOver(true);
           setGameStart(true);
         } else {
+          // assign isClicked:true value to current card
           setCards((oldCards) =>
             shuffleArray(
               oldCards.map((card) => {
@@ -52,6 +53,7 @@ function App() {
               })
             )
           );
+          //update score and highscore
           const newScore = score + 1;
           if (newScore > bestScore) {
             saveBestScore(newScore);
@@ -60,13 +62,14 @@ function App() {
         }
       }
     });
-    // turn card
+    // turn card animation
     setRevealed((prevState) => !prevState);
     setTimeout(() => {
       setRevealed((prevState) => !prevState);
     }, 1000);
   }
 
+  // save score to localstorage
   function saveBestScore(bestScore) {
     setBestScore(bestScore);
     localStorage.setItem('MemoryBestScore', bestScore);
@@ -74,6 +77,7 @@ function App() {
   function getBestScore() {
     return localStorage.getItem('MemoryBestScore');
   }
+  // when click on start button
   function handleNewGame() {
     if (win) {
       gameLevelUp();
@@ -91,13 +95,14 @@ function App() {
     setWin(false);
   }
 
+  // when player wins, a new level is available with increase in difficulty
   function gameLevelUp() {
     if (level < levels.length - 1) {
       setLevel((prevLevel) => prevLevel + 1);
       // new card set with  difficulty increase
       setCards(getNewCards(levels[level + 1].cards));
     } else {
-      //level max
+      //level max stays the same
       setLevel((prevLevel) => prevLevel);
       setCards(getNewCards(levels[level].cards));
     }
@@ -109,7 +114,7 @@ function App() {
   React.useEffect(() => {
     const allCliqued = cards.every((card) => card.isClicked);
 
-    //check if win
+    //check if win on each render of cards
     if (allCliqued) {
       setWin(true);
       setGameStart(true);
